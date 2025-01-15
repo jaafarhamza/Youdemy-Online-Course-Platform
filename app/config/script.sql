@@ -40,6 +40,8 @@ CREATE TABLE cours (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+
+
 CREATE TABLE tags (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL UNIQUE
@@ -56,6 +58,16 @@ CREATE TABLE cours_tags (
         REFERENCES tags (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE cours_etudiants (
+    cours_id BIGINT UNSIGNED,
+    etudiant_id BIGINT,
+    PRIMARY KEY (cours_id, etudiant_id),
+    CONSTRAINT fk_cours_etudiants_cours FOREIGN KEY (cours_id) 
+        REFERENCES cours (id) ON DELETE CASCADE,
+    CONSTRAINT fk_cours_etudiants_etudiant FOREIGN KEY (etudiant_id) 
+        REFERENCES visiteur (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 ALTER TABLE cours
 DROP FOREIGN KEY fk_cours_category;
 
@@ -63,4 +75,12 @@ ALTER TABLE cours
 ADD CONSTRAINT fk_cours_category
 FOREIGN KEY (category_id) REFERENCES categories(id)
 ON DELETE CASCADE;
+
+ALTER TABLE cours
+ADD video_url VARCHAR(255),
+
+ALTER TABLE visiteur
+MODIFY COLUMN role ENUM('visiteur', 'enseignant', 'admin', 'etudiant') NOT NULL DEFAULT 'visiteur';
+
+
 

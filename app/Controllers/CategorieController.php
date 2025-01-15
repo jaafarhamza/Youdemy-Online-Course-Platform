@@ -1,35 +1,29 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\Tag;
+use App\Models\Categorie;
 use PDO;
 
-class TagController
+class CategorieController
 {
     private $model;
 
     public function __construct(PDO $db)
     {
-        $this->model = new Tag($db);
+        $this->model = new Categorie($db);
     }
 
     public function create($data)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = $_POST['name'];
-
-            if (empty($name)) {
-                echo "Name cannot be empty.";
-                return;
-            }
             $data = [
-                'name' => $name,
+                'name' => $_POST['name'],
             ];
             if ($this->model->create($data)) {
-                header('Location: /../tags/index.php');
+                header('Location: /../categories/create.php');
                 exit;
             } else {
-                echo "Failed to create tag.";
+                echo "Failed to create category.";
             }
         }
     }
@@ -49,3 +43,5 @@ class TagController
         return $this->model->delete($conditions);
     }
 }
+
+
