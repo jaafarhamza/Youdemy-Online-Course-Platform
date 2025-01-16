@@ -1,8 +1,10 @@
 <?php
     require_once __DIR__ . '/../../../vendor/autoload.php';
-    use App\Config\Database;
-    // $test = new Database;
-    // $test::connection();
+    session_start();
+    if (! isset($_SESSION['id']) || $_SESSION['role'] !== 'admin') {
+        header('Location: ../auth/login.php');
+        exit;
+    }
 
 ?>
 <!DOCTYPE html>
