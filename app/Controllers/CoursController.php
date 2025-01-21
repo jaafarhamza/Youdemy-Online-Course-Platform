@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -103,27 +104,53 @@ class CoursController
         }
         return "cours not found.";
     }
-    public function getAllCourses()
+
+    public function getAllCourses($categoryId, $page, $limit)
     {
-        $stmt = $this->db->prepare("SELECT * FROM categories");
+        $offset = ($page - 1) * $limit;
+
+        $stmt = $this->db->prepare("SELECT 
+            c.id AS course_id,
+            c.title,
+            c.description,
+            c.featured_image,
+            c.created_at,
+            v.username AS enseignant_name,
+            GROUP_CONCAT(t.name SEPARATOR ', ') AS tags
+        FROM 
+            cours c
+        JOIN 
+            visiteur v ON c.enseignant_id = v.id
+        LEFT JOIN 
+            cours_tags ct ON c.id = ct.cours_id
+        LEFT JOIN 
+            tags t ON ct.tag_id = t.id
+        WHERE 
+            c.category_id = :categoryId
+        GROUP BY 
+            c.id
+        LIMIT :limit OFFSET :offset;");
+
+        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-        $categoryCours = [];
-    
-        foreach ($categories as $category) {
-            $categoryId = $category['id'];
-    
-            $stmt = $this->db->prepare("SELECT * FROM cours WHERE category_id = :category_id");
-            $stmt->execute(['category_id' => $categoryId]);
-            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            $categoryCours[$categoryId] = [
-                'name'  => $category['name'],
-                'cours' => $courses, 
-            ];
-        }
-        return $categoryCours;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getTotalCourses($categoryId)
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM cours WHERE category_id = :categoryId");
+        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function enrollInCourse($cours_id, $etudiant_id)
+{
+    $stmt = $this->db->prepare("INSERT INTO cours_etudiants (cours_id, etudiant_id) VALUES (:cours_id, :etudiant_id)");
+    $stmt->bindValue(':cours_id', $cours_id, PDO::PARAM_INT);
+    $stmt->bindValue(':etudiant_id', $etudiant_id, PDO::PARAM_INT);
+    return $stmt->execute();
+}
 }

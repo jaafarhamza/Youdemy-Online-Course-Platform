@@ -15,14 +15,19 @@
 
         $visiteur = $controller->login($email, $password);
         if ($visiteur) {
-            $_SESSION['id']    = $visiteur['id'];
-            $_SESSION['email'] = $visiteur['email'];
-            $_SESSION['role']  = $visiteur['role'];
+            $_SESSION['id']       = $visiteur['id'];
+            $_SESSION['email']    = $visiteur['email'];
+            $_SESSION['username'] = $visiteur['username'];
+            $_SESSION['role']     = $visiteur['role'];
+            $_SESSION['status']   = $visiteur['status'];
 
             if ($visiteur['role'] === 'admin') {
                 header('Location: ../visiteurs/dashboard.php');
-            } else {
+            } elseif ($visiteur['status'] === 'active') {
                 header('Location: ../visiteurs/home.php');
+            } else {
+                $_SESSION['login_error'] = "You're banned.";
+                header('Location: ../auth/login.php');
             }
             exit;
         } else {

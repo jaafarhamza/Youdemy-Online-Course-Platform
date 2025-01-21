@@ -24,7 +24,7 @@ class Database
         try {
             self::$pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
             self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo 'Done';
+            // echo 'Done';
         } catch (PDOException $e) {
             die("Database connection failed: " . $e->getMessage());
         }

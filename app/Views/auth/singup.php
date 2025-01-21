@@ -1,25 +1,25 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
+    require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use App\Config\Database;
-use App\Controllers\VisiteurController;
+    use App\Config\Database;
+    use App\Controllers\VisiteurController;
 
-$db = Database::connection();
-$controller = new VisiteurController($db);
+    $db         = Database::connection();
+    $controller = new VisiteurController($db);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        'username' => $_POST['username'],
-        'email' => $_POST['email'],
-        'password' => $_POST['password'],
-        'role' => $_POST['role'],
-    ];
-    if ($controller->register($data)) {
-        header('Location: ../visiteurs/home.php');
-    } else {
-        echo "Registration failed.";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = [
+            'username' => $_POST['username'],
+            'email'    => $_POST['email'],
+            'password' => $_POST['password'],
+            'role'     => $_POST['role'],
+        ];
+        if ($controller->register($data)) {
+            header('Location: ../auth/login.php');
+        } else {
+            echo "Registration failed.";
+        }
     }
-}
 ?>
 <!DOCTYPE html>
 <html lang="fr">

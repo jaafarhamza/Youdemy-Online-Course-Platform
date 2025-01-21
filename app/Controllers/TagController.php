@@ -26,7 +26,7 @@ class TagController
                 'name' => $name,
             ];
             if ($this->model->create($data)) {
-                header('Location: /../tags/index.php');
+                header('Location: ../tags/index.php');
                 exit;
             } else {
                 echo "Failed to create tag.";

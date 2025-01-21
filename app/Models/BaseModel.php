@@ -5,10 +5,10 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 use PDO;
 
-class BaseModel
+abstract class BaseModel
 {
-    private $conn;
-    private $table;
+    protected $conn;
+    protected $table;
 
     public function __construct(PDO $db, $table)
     {
@@ -30,17 +30,18 @@ class BaseModel
         $placeholders = ":" . implode(", :", array_keys($data));
         $query        = "INSERT INTO {$this->table} ($columns) VALUES ($placeholders)";
         echo $query;
-        $stmt         = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
 
         foreach ($data as $key => &$value) {
             $stmt->bindParam(":$key", $value);
         }
 
-        if (!$stmt->execute()) {
-            print_r($stmt->errorInfo()); 
-            return false; 
+        if (! $stmt->execute()) {
+            print_r($stmt->errorInfo());
+            return false;
         }
-        return true;
+        // return true;
+        return $this->conn->lastInsertId();
     }
 
     public function read($conditions = [])
@@ -110,21 +111,23 @@ class BaseModel
         return $stmt->execute();
     }
 
-    private function uploadFile($file)
+    protected function uploadFile($file)
     {
-        $targetDir  = "uploads/";
+        $targetDir = __DIR__ . '/../../uploads/'; 
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, true); 
+        }
         $targetFile = $targetDir . basename($file["name"]);
-        $fileType   = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-        $allowedTypes = ["jpg", "jpeg", "png", "gif", "pdf", "mp4", "avi", "mov"];
-        if (! in_array($fileType, $allowedTypes)) {
+        $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+        $allowedTypes = ["jpg", "jpeg", "png", "webp"];
+    
+        if (!in_array($fileType, $allowedTypes)) {
             return false;
         }
-
         if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-            return $targetFile;
+            return 'uploads/' . basename($file["name"]); 
         }
 
-        return false;
+        return false; 
     }
 }

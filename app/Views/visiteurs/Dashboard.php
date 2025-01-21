@@ -25,41 +25,7 @@
     </style>
 </head>
 <body class="bg-gray-300">
-
-<!-- Sidebar -->
-<div class="flex min-h-screen">
-    <aside class="w-64 bg-gradient-to-br from-blue-800 to-blue-600 text-white flex flex-col">
-        <div class="p-6 text-2xl font-bold border-b border-blue-700">Admin Dashboard</div>
-        <nav class="mt-10 flex-1 space-y-2">
-            <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
-                Manage Tag
-            </a>
-            <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
-                Manage Category
-            </a>
-            <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
-                Manage Courses
-            </a>
-            <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
-                Manage Enseignants
-            </a>
-            <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
-                Manage Students
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 p-10">
-        <header class="flex justify-between items-center mb-10">
-            <h1 class="text-3xl font-bold">Bienvenue, Admin</h1>
-            <div class="flex items-center space-x-4">
-                <span>John Doe</span>
-                <button class="py-2 px-4 rounded bg-red-500 hover:bg-red-600 transition duration-200">Logout</button>
-                <img class="w-10 h-10 rounded-full" src="https://via.placeholder.com/40" alt="User Avatar">
-            </div>
-        </header>
-
+    <?php include_once __DIR__ . '/aside-header.php'; ?>
         <!-- Numbers Section -->
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
             <div class="bg-gradient-to-r from-green-400 to-blue-500 p-6 rounded-lg shadow-md text-white flex items-center space-x-4">
