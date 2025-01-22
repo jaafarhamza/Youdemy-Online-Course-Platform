@@ -1,0 +1,21 @@
+{
+  "intelephense.codeLens.implementations.enable": true,
+  "intelephense.codeLens.overrides.enable": true,
+  "intelephense.codeLens.parent.enable": true,
+  "intelephense.codeLens.references.enable": true,
+  "intelephense.codeLens.usages.enable": true,
+  "intelephense.compatibility.preferPsalmPhpstanPrefixedAnnotations": true,
+  "intelephense.completion.fullyQualifyGlobalConstantsAndFunctions": true,
+  "intelephense.environment.documentRoot": "",
+  "intelephense.phpdoc.useFullyQualifiedNames": true,
+  "phpfmt.cakephp": true,
+  "phpfmt.psr1": true,
+  "phpfmt.psr1_naming": true,
+  "phpfmt.use_old_phpfmt": true,
+  "phpfmt.visibility_order": true,
+  "phpfmt.wp": true,
+  "phpfmt.yoda": true,
+  "prettier.bracketSameLine": true,
+  "prettier.enableDebugLogs": true,
+  "phpfmt.smart_linebreak_after_curly": true
+}

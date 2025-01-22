@@ -20,7 +20,7 @@ class CategorieController
                 'name' => $_POST['name'],
             ];
             if ($this->model->create($data)) {
-                header('Location: /../categories/create.php');
+                header('Location: ../categories/index.php');
                 exit;
             } else {
                 echo "Failed to create category.";
@@ -43,5 +43,3 @@ class CategorieController
         return $this->model->delete($conditions);
     }
 }
-
-

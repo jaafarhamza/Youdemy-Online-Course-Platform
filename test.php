@@ -6,3 +6,7 @@ use App\Config\Database;
 
 $db = Database::connection();
 var_dump($db); 
+
+
+
+
