@@ -76,6 +76,7 @@ class CoursController
         } else {
             echo "Failed to create cours.";
         }
+
     }
 
     public function readCategories()
@@ -153,4 +154,85 @@ class CoursController
     $stmt->bindValue(':etudiant_id', $etudiant_id, PDO::PARAM_INT);
     return $stmt->execute();
 }
+
+public function editCours($coursId, $data, $files = [])
+{
+
+    $coursData = $this->getCourseById($coursId);
+    if (empty($coursData)) {
+        return "Course not found.";
+    }
+
+    if (!empty($coursData['video_url'])) {
+        $cours = new VideoCours($this->db);
+        $cours->setVideoUrl($coursData['video_url']);
+    } elseif (!empty($coursData['content'])) {
+        $cours = new TextCours($this->db);
+        $cours->setContent($coursData['content']);
+    }
+
+    $title = filter_input(INPUT_POST, 'title');
+    $description = filter_input(INPUT_POST, 'description');
+    $category_id = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT);
+    $tags = filter_input(INPUT_POST, 'tags', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+    $content_type = filter_input(INPUT_POST, 'content_type');
+    $video_url = filter_input(INPUT_POST, 'video_url', FILTER_SANITIZE_URL);
+    $content = filter_input(INPUT_POST, 'content');
+
+    $updateData = [
+        'title' => $title,
+        'description' => $description,
+        'category_id' => $category_id,
+    ];
+
+    if ($content_type === 'video') {
+        $updateData['video_url'] = $video_url;
+        $cours->setVideoUrl($video_url);
+    } elseif ($content_type === 'text') {
+        $updateData['content'] = $content;
+        $cours->setContent($content);
+    }
+
+    if ($cours->update($updateData, ['id' => $coursId])) {
+
+        if (isset($files['featured_image']) && $files['featured_image']['error'] === UPLOAD_ERR_OK) {
+            $filePath = $cours->uploadFile($files['featured_image']);
+            if ($filePath) {
+                $cours->update(['featured_image' => $filePath], ['id' => $coursId]);
+            } else {
+                echo "Image upload failed.";
+            }
+        }
+
+        $this->updateTags($coursId, $tags);
+
+        header('Location: ../cours/index.php');
+        exit;
+    } else {
+        echo "Failed to update course.";
+    }
+}
+
+private function getCourseById($coursId)
+{
+    $stmt = $this->db->prepare("SELECT * FROM cours WHERE id = :id");
+    $stmt->bindValue(':id', $coursId, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+private function updateTags($coursId, $tags)
+{
+    $stmt = $this->db->prepare("DELETE FROM cours_tags WHERE cours_id = :cours_id");
+    $stmt->bindValue(':cours_id', $coursId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    foreach ($tags as $tagId) {
+        $stmt = $this->db->prepare("INSERT INTO cours_tags (cours_id, tag_id) VALUES (:cours_id, :tag_id)");
+        $stmt->bindValue(':cours_id', $coursId, PDO::PARAM_INT);
+        $stmt->bindValue(':tag_id', $tagId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+}
+
 }

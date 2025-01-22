@@ -16,7 +16,6 @@ $controller = new CoursController($db);
 
 $etudiant_id = $_SESSION['id'];
 
-// Fetch enrolled courses for the etudiant
 $stmt = $db->prepare("
     SELECT c.id, c.title, c.description, c.featured_image, c.created_at, v.username AS enseignant_name
     FROM cours c

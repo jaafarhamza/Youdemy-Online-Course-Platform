@@ -1,5 +1,7 @@
 <?php
 session_start();
+include __DIR__ . '/../visiteurs/header_home.php';
+
 
 if (! isset($_SESSION['role']) || $_SESSION['role'] !== 'enseignant') {
     header('Location: ../visiteurs/home.php?error=Unauthorized access');
@@ -41,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl form-container">
+<body class="bg-gray-100 flex items-center justify-center h-screen ">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl form-container ">
         <h2 class="text-2xl font-bold mb-6 text-center">Create Course</h2>
         <form action="create.php" method="POST" enctype="multipart/form-data" class="space-y-4">
             <div class="form-group">
