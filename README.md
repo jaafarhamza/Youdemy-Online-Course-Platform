@@ -1,4 +1,2 @@
 
 
-classe generique = DAO
-

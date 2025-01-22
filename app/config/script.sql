@@ -127,3 +127,10 @@ GROUP BY
 
 
 SELECT COUNT(*) FROM tags
+
+
+
+
+
+
+

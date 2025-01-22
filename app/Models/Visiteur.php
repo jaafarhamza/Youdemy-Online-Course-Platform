@@ -8,12 +8,6 @@ use PDO;
 class Visiteur extends BaseModel
 {
     protected $role;
-    private string $username;
-    private string $password;
-    private string $email;
-    private string $bio;
-    private string $profile_picture_url;
-    
     public function __construct(PDO $db)
     {
         parent::__construct($db, 'visiteur');
