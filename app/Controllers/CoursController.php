@@ -275,4 +275,111 @@ class CoursController
             return false; // Failed
         }
     }
+
+    public function getTotalTags()
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM tags");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getTotalCategories()
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM categories");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getTotalCoursesStatis()
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM cours WHERE status = 'published'");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getTotalStudents()
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM visiteur WHERE role = 'etudiant'");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getTotalEnseignants()
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM visiteur WHERE role = 'enseignant'");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getCoursesByCategory()
+    {
+        $stmt = $this->db->prepare("
+        SELECT c.name AS category_name, COUNT(cours.id) AS course_count
+        FROM categories c
+        LEFT JOIN cours ON c.id = cours.category_id
+        WHERE cours.status = 'published' 
+        GROUP BY c.name
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTopEnseignants()
+    {
+        $stmt = $this->db->prepare("
+        SELECT v.username AS enseignant_name, COUNT(c.id) AS course_count
+        FROM visiteur v
+        LEFT JOIN cours c ON v.id = c.enseignant_id
+        WHERE c.status = 'published' 
+        GROUP BY v.username
+        ORDER BY course_count DESC
+        LIMIT 3
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTopCoursesByStudents()
+    {
+        $stmt = $this->db->prepare("
+        SELECT c.title AS course_title, COUNT(ce.etudiant_id) AS student_count
+        FROM cours c
+        LEFT JOIN cours_etudiants ce ON c.id = ce.cours_id
+        WHERE c.status = 'published' 
+        GROUP BY c.title
+        ORDER BY student_count DESC
+        LIMIT 3
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function searchCourses($query)
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                c.id AS course_id,
+                c.title,
+                c.description,
+                c.featured_image,
+                c.created_at,
+                v.username AS enseignant_name,
+                GROUP_CONCAT(t.name SEPARATOR ', ') AS tags
+            FROM 
+                cours c
+            JOIN 
+                visiteur v ON c.enseignant_id = v.id
+            LEFT JOIN 
+                cours_tags ct ON c.id = ct.cours_id
+            LEFT JOIN 
+                tags t ON ct.tag_id = t.id
+            WHERE 
+                (c.title LIKE :query OR c.description LIKE :query OR v.username LIKE :query)
+                AND c.status = 'published' -- Only search published courses
+            GROUP BY 
+                c.id
+        ");
+        $stmt->bindValue(':query', "%$query%", PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

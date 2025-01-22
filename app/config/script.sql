@@ -126,3 +126,4 @@ GROUP BY
     c.id;
 
 
+SELECT COUNT(*) FROM tags
